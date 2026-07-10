@@ -1,0 +1,55 @@
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package mock
+
+import (
+	"fmt"
+	"sync"
+
+	"github.com/hanzo-ds/go"
+	"github.com/DATA-DOG/go-sqlmock"
+)
+
+var clickHousePool *mockClickHouseDriver
+
+type mockClickHouseDriver struct {
+	counter int
+	conns   map[string]*clickhousemock
+	sync.Mutex
+}
+
+func init() {
+	clickHousePool = &mockClickHouseDriver{
+		conns: make(map[string]*clickhousemock),
+	}
+}
+
+// NewClickHouseNative creates clickhousemock database mock to manage expectations.
+func NewClickHouseNative(options *datastore.Options) (*clickhousemock, error) {
+	return NewClickHouseWithQueryMatcher(options, sqlmock.QueryMatcherEqual)
+}
+
+func NewClickHouseWithQueryMatcher(
+	options *datastore.Options,
+	queryMatcher sqlmock.QueryMatcher,
+) (*clickhousemock, error) {
+	clickHousePool.Lock()
+	dsn := fmt.Sprintf("clickhousemock_db_%d", clickHousePool.counter)
+	clickHousePool.counter++
+
+	cmock := &clickhousemock{dsn: dsn, drv: clickHousePool, ordered: true, queryMatcher: queryMatcher}
+	clickHousePool.conns[dsn] = cmock
+	clickHousePool.Unlock()
+
+	return cmock.open(options)
+}
