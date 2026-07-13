@@ -48,10 +48,10 @@ func (e *OpError) Error() string {
 	return fmt.Sprintf("datastore [%s]: %s", e.Op, e.Err)
 }
 
-// ClickConnMockCommon interface serves to create expectations
+// DatastoreConnMockCommon interface serves to create expectations
 // for any kind of database action in order to mock
 // and test real database behavior.
-type ClickConnMockCommon interface {
+type DatastoreConnMockCommon interface {
 	// ExpectClose queues an expectation for this database
 	// action to be triggered. the *ExpectedClose allows
 	// to mock database response
@@ -131,7 +131,7 @@ type datastoremock struct {
 	expected []expectation
 }
 
-var _ ClickConnMockCommon = (*datastoremock)(nil)
+var _ DatastoreConnMockCommon = (*datastoremock)(nil)
 var _ driver.Conn = (*datastoremock)(nil)
 
 func (c *datastoremock) open(options *datastore.Options) (*datastoremock, error) {

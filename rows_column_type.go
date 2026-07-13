@@ -29,15 +29,15 @@ import (
 
 type columnType struct {
 	name     string
-	chType   string
+	dsType   string
 	nullable bool
 	scanType reflect.Type
 }
 
-func NewColumnType(name string, chType string, nullable bool, scanType reflect.Type) driver.ColumnType {
+func NewColumnType(name string, dsType string, nullable bool, scanType reflect.Type) driver.ColumnType {
 	return columnType{
 		name:     name,
-		chType:   chType,
+		dsType:   dsType,
 		nullable: nullable,
 		scanType: scanType,
 	}
@@ -56,5 +56,5 @@ func (c columnType) ScanType() reflect.Type {
 }
 
 func (c columnType) DatabaseTypeName() string {
-	return c.chType
+	return c.dsType
 }
