@@ -34,8 +34,8 @@ func TestPrepareExpectations(t *testing.T) {
 		t.Errorf("stmt was expected while creating a prepared statement")
 	}
 
-	var clickConn = mock
-	batch, err := clickConn.PrepareBatch(context.Background(), "INSERT INTO articles (id, title, content) VALUES (?, ?, ?)")
+	var datastoreConn = mock
+	batch, err := datastoreConn.PrepareBatch(context.Background(), "INSERT INTO articles (id, title, content) VALUES (?, ?, ?)")
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when preparing a batch statement", err)
 	}
