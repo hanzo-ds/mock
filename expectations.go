@@ -44,7 +44,7 @@ func (e *commonExpectation) fulfilled() bool {
 }
 
 // ExpectedClose is used to manage *driver.Conn.Close expectation
-// returned by *clickhousemock.ExpectClose.
+// returned by *datastoremock.ExpectClose.
 type ExpectedClose struct {
 	commonExpectation
 }
@@ -65,7 +65,7 @@ func (e *ExpectedClose) String() string {
 }
 
 // ExpectedQuery is used to manage *driver.Conn.Query expectations.
-// Returned by *clickhousemock.ExpectQuery.
+// Returned by *datastoremock.ExpectQuery.
 type ExpectedQuery struct {
 	queryBasedExpectation
 	rows             *Rows
@@ -76,7 +76,7 @@ type ExpectedQuery struct {
 
 // WithArgs will match given expected args to actual database query arguments.
 // if at least one argument does not match, it will return an error. For specific
-// arguments an clickhousemock.Argument interface can be used to match an argument.
+// arguments an datastoremock.Argument interface can be used to match an argument.
 func (e *ExpectedQuery) WithArgs(args ...any) *ExpectedQuery {
 	e.args = args
 	return e
@@ -134,7 +134,7 @@ func (e *ExpectedQuery) String() string {
 }
 
 // ExpectedExec is used to manage *driver.Conn.Exec expectations.
-// Returned by *clickhousemock.ExpectExec.
+// Returned by *datastoremock.ExpectExec.
 type ExpectedExec struct {
 	queryBasedExpectation
 	delay time.Duration
@@ -142,7 +142,7 @@ type ExpectedExec struct {
 
 // WithArgs will match given expected args to actual database exec operation arguments.
 // if at least one argument does not match, it will return an error. For specific
-// arguments an clickhousemock.Argument interface can be used to match an argument.
+// arguments an datastoremock.Argument interface can be used to match an argument.
 func (e *ExpectedExec) WithArgs(args ...any) *ExpectedExec {
 	e.args = args
 	return e
@@ -223,7 +223,7 @@ func matchArg(expected, actual any) error {
 }
 
 // ExpectedPing is used to manage *driver.Conn.Ping expectations.
-// Returned by *clickhousemock.ExpectPing.
+// Returned by *datastoremock.ExpectPing.
 type ExpectedPing struct {
 	commonExpectation
 	delay time.Duration
@@ -252,7 +252,7 @@ func (e *ExpectedPing) String() string {
 }
 
 // ExpectedPrepareBatch is used to manage *driver.Conn.PrepareBatch expectations.
-// Returned by *clickhousemock.ExpectedPrepareBatch.
+// Returned by *datastoremock.ExpectedPrepareBatch.
 type ExpectedPrepareBatch struct {
 	commonExpectation
 	expected        []expectation

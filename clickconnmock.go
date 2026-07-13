@@ -24,7 +24,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-type OpError struct { // taken from https://github.com/ClickHouse/clickhouse-go/blob/bfd9f33931482ddacadee5a899b760455b9268e6/datastore.go#L51
+type OpError struct { // taken from https://github.com/ClickHouse/datastore-go/blob/bfd9f33931482ddacadee5a899b760455b9268e6/datastore.go#L51
 	Op         string
 	ColumnName string
 	Err        error
@@ -33,19 +33,19 @@ type OpError struct { // taken from https://github.com/ClickHouse/clickhouse-go/
 func (e *OpError) Error() string {
 	switch err := e.Err.(type) {
 	case *column.Error:
-		return fmt.Sprintf("clickhouse [%s]: (%s %s) %s", e.Op, e.ColumnName, err.ColumnType, err.Err)
+		return fmt.Sprintf("datastore [%s]: (%s %s) %s", e.Op, e.ColumnName, err.ColumnType, err.Err)
 	case *column.ColumnConverterError:
 		var hint string
 		if len(err.Hint) != 0 {
 			hint += ". " + err.Hint
 		}
-		return fmt.Sprintf("clickhouse [%s]: (%s) converting %s to %s is unsupported%s",
+		return fmt.Sprintf("datastore [%s]: (%s) converting %s to %s is unsupported%s",
 			err.Op, e.ColumnName,
 			err.From, err.To,
 			hint,
 		)
 	}
-	return fmt.Sprintf("clickhouse [%s]: %s", e.Op, e.Err)
+	return fmt.Sprintf("datastore [%s]: %s", e.Op, e.Err)
 }
 
 // ClickConnMockCommon interface serves to create expectations
@@ -120,36 +120,36 @@ type ClickConnMockCommon interface {
 	MatchExpectationsInOrder(bool)
 }
 
-type clickhousemock struct {
+type datastoremock struct {
 	ordered      bool
 	dsn          string
 	opened       int
-	drv          *mockClickHouseDriver
+	drv          *mockDatastoreDriver
 	queryMatcher sqlmock.QueryMatcher
 	monitorPings bool
 
 	expected []expectation
 }
 
-var _ ClickConnMockCommon = (*clickhousemock)(nil)
-var _ driver.Conn = (*clickhousemock)(nil)
+var _ ClickConnMockCommon = (*datastoremock)(nil)
+var _ driver.Conn = (*datastoremock)(nil)
 
-func (c *clickhousemock) open(options *datastore.Options) (*clickhousemock, error) {
+func (c *datastoremock) open(options *datastore.Options) (*datastoremock, error) {
 	if c.queryMatcher == nil {
 		c.queryMatcher = sqlmock.QueryMatcherRegexp
 	}
 	return c, nil
 }
 
-func (c *clickhousemock) queryMatcherFunc() sqlmock.QueryMatcher {
+func (c *datastoremock) queryMatcherFunc() sqlmock.QueryMatcher {
 	return c.queryMatcher
 }
 
-func (c *clickhousemock) MatchExpectationsInOrder(b bool) {
+func (c *datastoremock) MatchExpectationsInOrder(b bool) {
 	c.ordered = b
 }
 
-func (c *clickhousemock) ExpectClose() *ExpectedClose {
+func (c *datastoremock) ExpectClose() *ExpectedClose {
 	e := &ExpectedClose{}
 	c.expected = append(c.expected, e)
 	return e
@@ -159,7 +159,7 @@ func (c *clickhousemock) ExpectClose() *ExpectedClose {
 // be called depending on the circumstances, but if it is called
 // there must be an *ExpectedClose expectation satisfied.
 // meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Close() error {
+func (c *datastoremock) Close() error {
 	c.drv.Lock()
 	defer c.drv.Unlock()
 
@@ -202,14 +202,14 @@ func (c *clickhousemock) Close() error {
 	return expected.err
 }
 
-func (c *clickhousemock) ExpectStats() *ExpectedStats {
+func (c *datastoremock) ExpectStats() *ExpectedStats {
 	e := &ExpectedStats{}
 	c.expected = append(c.expected, e)
 	return e
 }
 
 // Stats meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Stats() driver.Stats {
+func (c *datastoremock) Stats() driver.Stats {
 	c.drv.Lock()
 	defer c.drv.Unlock()
 
@@ -248,7 +248,7 @@ func (c *clickhousemock) Stats() driver.Stats {
 }
 
 // Ping meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Ping(ctx context.Context) error {
+func (c *datastoremock) Ping(ctx context.Context) error {
 	if !c.monitorPings {
 		return nil
 	}
@@ -290,13 +290,13 @@ func (c *clickhousemock) Ping(ctx context.Context) error {
 	return expected.err
 }
 
-func (c *clickhousemock) ExpectPing() *ExpectedPing {
+func (c *datastoremock) ExpectPing() *ExpectedPing {
 	e := &ExpectedPing{}
 	c.expected = append(c.expected, e)
 	return e
 }
 
-func (c *clickhousemock) ExpectAsyncInsert(expectedSQL string, expectedWait bool) *ExpectedAsyncInsert {
+func (c *datastoremock) ExpectAsyncInsert(expectedSQL string, expectedWait bool) *ExpectedAsyncInsert {
 	e := &ExpectedAsyncInsert{}
 	e.expectSQL = expectedSQL
 	e.expectWait = expectedWait
@@ -305,7 +305,7 @@ func (c *clickhousemock) ExpectAsyncInsert(expectedSQL string, expectedWait bool
 }
 
 // AsyncInsert meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) AsyncInsert(ctx context.Context, query string, wait bool, args ...any) error {
+func (c *datastoremock) AsyncInsert(ctx context.Context, query string, wait bool, args ...any) error {
 	ex, err := c.asyncInsert(ctx, query, wait)
 	if ex != nil {
 		select {
@@ -318,7 +318,7 @@ func (c *clickhousemock) AsyncInsert(ctx context.Context, query string, wait boo
 	return err
 }
 
-func (c *clickhousemock) asyncInsert(ctx context.Context, query string, wait bool) (*ExpectedAsyncInsert, error) {
+func (c *datastoremock) asyncInsert(ctx context.Context, query string, wait bool) (*ExpectedAsyncInsert, error) {
 	var expected *ExpectedAsyncInsert
 	var fulfilled int
 	var ok bool
@@ -365,7 +365,7 @@ func (c *clickhousemock) asyncInsert(ctx context.Context, query string, wait boo
 	return expected, expected.err
 }
 
-func (c *clickhousemock) ExpectExec(expectedSQL string) *ExpectedExec {
+func (c *datastoremock) ExpectExec(expectedSQL string) *ExpectedExec {
 	e := &ExpectedExec{}
 	e.expectSQL = expectedSQL
 	c.expected = append(c.expected, e)
@@ -373,7 +373,7 @@ func (c *clickhousemock) ExpectExec(expectedSQL string) *ExpectedExec {
 }
 
 // Exec meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Exec(ctx context.Context, query string, args ...any) error {
+func (c *datastoremock) Exec(ctx context.Context, query string, args ...any) error {
 	c.drv.Lock()
 	defer c.drv.Unlock()
 
@@ -416,14 +416,14 @@ func (c *clickhousemock) Exec(ctx context.Context, query string, args ...any) er
 	return expected.err
 }
 
-func (c *clickhousemock) ExpectPrepareBatch(expectedSQL string) *ExpectedPrepareBatch {
+func (c *datastoremock) ExpectPrepareBatch(expectedSQL string) *ExpectedPrepareBatch {
 	e := &ExpectedPrepareBatch{expectSQL: expectedSQL}
 	c.expected = append(c.expected, e)
 	return e
 }
 
 // PrepareBatch meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) PrepareBatch(ctx context.Context, query string, opts ...driver.PrepareBatchOption) (driver.Batch, error) {
+func (c *datastoremock) PrepareBatch(ctx context.Context, query string, opts ...driver.PrepareBatchOption) (driver.Batch, error) {
 	ex, err := c.prepareBatch(ctx, query)
 	if ex != nil {
 		select {
@@ -439,7 +439,7 @@ func (c *clickhousemock) PrepareBatch(ctx context.Context, query string, opts ..
 	return nil, err
 }
 
-func (c *clickhousemock) prepareBatch(ctx context.Context, query string) (*ExpectedPrepareBatch, error) {
+func (c *datastoremock) prepareBatch(ctx context.Context, query string) (*ExpectedPrepareBatch, error) {
 	var expected *ExpectedPrepareBatch
 	var fulfilled int
 	var ok bool
@@ -486,7 +486,7 @@ func (c *clickhousemock) prepareBatch(ctx context.Context, query string) (*Expec
 	return expected, expected.err
 }
 
-func (c *clickhousemock) ExpectQueryRow(expectedSQL string) *ExpectedQueryRow {
+func (c *datastoremock) ExpectQueryRow(expectedSQL string) *ExpectedQueryRow {
 	e := &ExpectedQueryRow{}
 	e.expectSQL = expectedSQL
 	c.expected = append(c.expected, e)
@@ -494,7 +494,7 @@ func (c *clickhousemock) ExpectQueryRow(expectedSQL string) *ExpectedQueryRow {
 }
 
 // QueryRow meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) QueryRow(ctx context.Context, query string, args ...any) driver.Row {
+func (c *datastoremock) QueryRow(ctx context.Context, query string, args ...any) driver.Row {
 	ex, err := c.queryRow(ctx, query, args...)
 	if ex != nil {
 		ex.row.err = err
@@ -508,7 +508,7 @@ func (c *clickhousemock) QueryRow(ctx context.Context, query string, args ...any
 	return ex.row
 }
 
-func (c *clickhousemock) queryRow(ctx context.Context, query string, args ...any) (*ExpectedQueryRow, error) {
+func (c *datastoremock) queryRow(ctx context.Context, query string, args ...any) (*ExpectedQueryRow, error) {
 	var expected *ExpectedQueryRow
 	var fulfilled int
 	var ok bool
@@ -555,7 +555,7 @@ func (c *clickhousemock) queryRow(ctx context.Context, query string, args ...any
 	return expected, expected.err
 }
 
-func (c *clickhousemock) ExpectQuery(expectedSQL string) *ExpectedQuery {
+func (c *datastoremock) ExpectQuery(expectedSQL string) *ExpectedQuery {
 	e := &ExpectedQuery{}
 	e.expectSQL = expectedSQL
 	c.expected = append(c.expected, e)
@@ -563,7 +563,7 @@ func (c *clickhousemock) ExpectQuery(expectedSQL string) *ExpectedQuery {
 }
 
 // Query meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Query(ctx context.Context, query string, args ...any) (driver.Rows, error) {
+func (c *datastoremock) Query(ctx context.Context, query string, args ...any) (driver.Rows, error) {
 	ex, err := c.query(ctx, query, args...)
 	if ex != nil {
 		select {
@@ -579,7 +579,7 @@ func (c *clickhousemock) Query(ctx context.Context, query string, args ...any) (
 	return nil, err
 }
 
-func (c *clickhousemock) query(ctx context.Context, query string, args ...any) (*ExpectedQuery, error) {
+func (c *datastoremock) query(ctx context.Context, query string, args ...any) (*ExpectedQuery, error) {
 	var expected *ExpectedQuery
 	var fulfilled int
 	var ok bool
@@ -630,7 +630,7 @@ func (c *clickhousemock) query(ctx context.Context, query string, args ...any) (
 	return expected, expected.err
 }
 
-func (c *clickhousemock) ExpectSelect(expectedSQL string) *ExpectedSelect {
+func (c *datastoremock) ExpectSelect(expectedSQL string) *ExpectedSelect {
 	e := &ExpectedSelect{}
 	e.expectSQL = expectedSQL
 	c.expected = append(c.expected, e)
@@ -638,8 +638,8 @@ func (c *clickhousemock) ExpectSelect(expectedSQL string) *ExpectedSelect {
 }
 
 // Select meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Select(ctx context.Context, dest any, query string, args ...any) error {
-	// Implementation based on that of Select in clickhouse-go https://github.com/ClickHouse/clickhouse-go/blob/main/scan.go#L29
+func (c *datastoremock) Select(ctx context.Context, dest any, query string, args ...any) error {
+	// Implementation based on that of Select in datastore-go https://github.com/ClickHouse/datastore-go/blob/main/scan.go#L29
 	dstSlicePtr := reflect.ValueOf(dest)
 	if dstSlicePtr.Kind() != reflect.Ptr {
 		return &OpError{
@@ -693,7 +693,7 @@ func (c *clickhousemock) Select(ctx context.Context, dest any, query string, arg
 	return err
 }
 
-func (c *clickhousemock) selectQuery(ctx context.Context, query string) (*ExpectedSelect, error) {
+func (c *datastoremock) selectQuery(ctx context.Context, query string) (*ExpectedSelect, error) {
 	var expected *ExpectedSelect
 	var fulfilled int
 	var ok bool
@@ -740,7 +740,7 @@ func (c *clickhousemock) selectQuery(ctx context.Context, query string) (*Expect
 	return expected, expected.err
 }
 
-func (c *clickhousemock) ExpectServerVersion() *ExpectedServerVersion {
+func (c *datastoremock) ExpectServerVersion() *ExpectedServerVersion {
 	e := &ExpectedServerVersion{}
 	c.expected = append(c.expected, e)
 	return e
@@ -748,7 +748,7 @@ func (c *clickhousemock) ExpectServerVersion() *ExpectedServerVersion {
 
 // ServerVersion returns the version of the database.
 // meets http://golang.org/pkg/database/sql/driver/#Conn interface
-func (c *clickhousemock) ServerVersion() (*driver.ServerVersion, error) {
+func (c *datastoremock) ServerVersion() (*driver.ServerVersion, error) {
 	c.drv.Lock()
 	defer c.drv.Unlock()
 
@@ -783,14 +783,14 @@ func (c *clickhousemock) ServerVersion() (*driver.ServerVersion, error) {
 	return &expected.version, expected.err
 }
 
-func (c *clickhousemock) ExpectContributors() *ExpectedContributors {
+func (c *datastoremock) ExpectContributors() *ExpectedContributors {
 	e := &ExpectedContributors{}
 	c.expected = append(c.expected, e)
 	return e
 }
 
 // Contributors meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
-func (c *clickhousemock) Contributors() []string {
+func (c *datastoremock) Contributors() []string {
 	c.drv.Lock()
 	defer c.drv.Unlock()
 
@@ -821,7 +821,7 @@ func (c *clickhousemock) Contributors() []string {
 	return expected.contributors
 }
 
-func (c *clickhousemock) ExpectationsWereMet() error {
+func (c *datastoremock) ExpectationsWereMet() error {
 	for _, e := range c.expected {
 		e.Lock()
 		fulfilled := e.fulfilled()
