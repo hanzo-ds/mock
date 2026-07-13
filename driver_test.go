@@ -21,39 +21,39 @@ import (
 
 func TestMockDriver(t *testing.T) {
 	t.Parallel()
-	_, err := NewClickHouseNative(nil)
+	_, err := NewDatastoreNative(nil)
 	assert.NoError(t, err)
 }
 
 func TestInit(t *testing.T) {
-	if clickHousePool == nil {
-		t.Error("clickHousePool was not initialized")
+	if datastorePool == nil {
+		t.Error("datastorePool was not initialized")
 	}
 
-	if clickHousePool.conns == nil {
-		t.Error("clickHousePool.conns was not initialized")
+	if datastorePool.conns == nil {
+		t.Error("datastorePool.conns was not initialized")
 	}
 }
 
-func TestNewClickHouseNativeConcurrency(t *testing.T) {
+func TestNewDatastoreNativeConcurrency(t *testing.T) {
 	var wg sync.WaitGroup
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			_, err := NewClickHouseNative(nil)
+			_, err := NewDatastoreNative(nil)
 			if err != nil {
-				t.Errorf("an error '%s' was not expected when creating a new ClickHouseNative", err)
+				t.Errorf("an error '%s' was not expected when creating a new DatastoreNative", err)
 			}
 		}()
 	}
 	wg.Wait()
 
-	if len(clickHousePool.conns) < 10 {
-		t.Errorf("expected >= 10 connections in pool, got %d", len(clickHousePool.conns))
+	if len(datastorePool.conns) < 10 {
+		t.Errorf("expected >= 10 connections in pool, got %d", len(datastorePool.conns))
 	}
 
-	if clickHousePool.counter < 10 {
-		t.Errorf("expected counter to be >= 10, got %d", clickHousePool.counter)
+	if datastorePool.counter < 10 {
+		t.Errorf("expected counter to be >= 10, got %d", datastorePool.counter)
 	}
 }

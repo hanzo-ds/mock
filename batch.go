@@ -20,13 +20,13 @@ import (
 var _ driver.Batch = (*batch)(nil)
 
 type batch struct {
-	conn  *clickhousemock
+	conn  *datastoremock
 	ex    *ExpectedPrepareBatch
 	query string
 }
 
 type batchcolumn struct {
-	conn  *clickhousemock
+	conn  *datastoremock
 	ex    *ExpectedPrepareBatch
 	query string
 }

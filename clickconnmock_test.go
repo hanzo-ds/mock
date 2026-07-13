@@ -22,7 +22,7 @@ import (
 
 func TestPrepareExpectations(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -49,7 +49,7 @@ func TestPrepareExpectations(t *testing.T) {
 
 func TestQueryExpectations(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -67,7 +67,7 @@ func TestQueryExpectations(t *testing.T) {
 
 func TestQueryExepectationsWithArgs(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -85,7 +85,7 @@ func TestQueryExepectationsWithArgs(t *testing.T) {
 
 func TestQueryExepectationsWithArgsAndRows(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -148,7 +148,7 @@ func TestQueryExepectationsWithArgsAndRows(t *testing.T) {
 }
 
 func TestQueryExepectationsWithArgsAndRowsColumnTypes(t *testing.T) {
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -220,7 +220,7 @@ func TestQueryExepectationsWithArgsAndRowsColumnTypes(t *testing.T) {
 
 func TestExpectError(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -239,7 +239,7 @@ func TestExpectError(t *testing.T) {
 
 func TestUnfulfilledExpectation(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -253,7 +253,7 @@ func TestUnfulfilledExpectation(t *testing.T) {
 
 func TestQueryExpectationsWithDifferentDataTypes(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -313,7 +313,7 @@ func TestQueryExpectationsWithDifferentDataTypes(t *testing.T) {
 
 func TestQueryExpectationsWithNoRows(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -339,7 +339,7 @@ func TestQueryExpectationsWithNoRows(t *testing.T) {
 
 func TestMultipleQueries(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -364,7 +364,7 @@ func TestMultipleQueries(t *testing.T) {
 
 func TestStrictOrderingOfExpectations(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -381,7 +381,7 @@ func TestStrictOrderingOfExpectations(t *testing.T) {
 
 func TestUnexpectedQuery(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -395,7 +395,7 @@ func TestUnexpectedQuery(t *testing.T) {
 
 func TestCorrectNumberOfCalls(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -415,7 +415,7 @@ func TestCorrectNumberOfCalls(t *testing.T) {
 
 func TestArgumentMismatch(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -430,7 +430,7 @@ func TestArgumentMismatch(t *testing.T) {
 
 func TestConnectionClose(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -449,7 +449,7 @@ func TestConnectionClose(t *testing.T) {
 
 func TestRowScanError(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -479,7 +479,7 @@ func TestRowScanError(t *testing.T) {
 
 func TestUnmatchedExpectations(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -493,7 +493,7 @@ func TestUnmatchedExpectations(t *testing.T) {
 
 func TestContextCancellation(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -509,7 +509,7 @@ func TestContextCancellation(t *testing.T) {
 
 func TestQueryMultipleExpectedRows(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -542,7 +542,7 @@ func TestQueryMultipleExpectedRows(t *testing.T) {
 
 func TestPrepareAndExecute(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -563,7 +563,7 @@ func TestPrepareAndExecute(t *testing.T) {
 
 func TestQueryRowExpectedRow(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -596,7 +596,7 @@ func TestQueryRowExpectedRow(t *testing.T) {
 
 func TestQueryRowExpectedNoRowsError(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -626,7 +626,7 @@ func TestQueryRowExpectedNoRowsError(t *testing.T) {
 
 func TestQueryReturnRowCustomError(t *testing.T) {
 	t.Parallel()
-	mock, err := NewClickHouseNative(nil)
+	mock, err := NewDatastoreNative(nil)
 	if err != nil {
 		t.Errorf("an error '%s' was not expected when opening a stub database connection", err)
 	}

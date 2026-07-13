@@ -1,7 +1,7 @@
-// Licensed to ClickHouse, Inc. under one or more contributor
+// Licensed to Datastore, Inc. under one or more contributor
 // license agreements. See the NOTICE file distributed with
 // this work for additional information regarding copyright
-// ownership. ClickHouse, Inc. licenses this file to you under
+// ownership. Datastore, Inc. licenses this file to you under
 // the Apache License, Version 2.0 (the "License"); you may
 // not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// This file is a copy of the original file from the clickhouse-go project.
+// This file is a copy of the original file from the datastore-go project.
 // The original file can be found here:
-// https://github.com/ClickHouse/clickhouse-go/blob/226a902d120aa46e3883fbf6a5a2667dfb9e90d2/clickhouse_rows.go
+// https://github.com/ClickHouse/datastore-go/blob/226a902d120aa46e3883fbf6a5a2667dfb9e90d2/datastore_rows.go
 
 package mock
 
@@ -66,7 +66,7 @@ func (r *Rows) ScanStruct(dest any) error {
 		return io.EOF
 	}
 
-	// Based on implementation of rows.ScanStruct in clickhouse-go https://github.com/ClickHouse/clickhouse-go/blob/main/clickhouse_rows.go#L81
+	// Based on implementation of rows.ScanStruct in datastore-go https://github.com/ClickHouse/datastore-go/blob/main/datastore_rows.go#L81
 	values, err := r.structMap.Map("ScanStruct", r.Columns(), dest, true)
 	if err != nil {
 		return err

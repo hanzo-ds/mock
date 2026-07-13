@@ -20,36 +20,36 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-var clickHousePool *mockClickHouseDriver
+var datastorePool *mockDatastoreDriver
 
-type mockClickHouseDriver struct {
+type mockDatastoreDriver struct {
 	counter int
-	conns   map[string]*clickhousemock
+	conns   map[string]*datastoremock
 	sync.Mutex
 }
 
 func init() {
-	clickHousePool = &mockClickHouseDriver{
-		conns: make(map[string]*clickhousemock),
+	datastorePool = &mockDatastoreDriver{
+		conns: make(map[string]*datastoremock),
 	}
 }
 
-// NewClickHouseNative creates clickhousemock database mock to manage expectations.
-func NewClickHouseNative(options *datastore.Options) (*clickhousemock, error) {
-	return NewClickHouseWithQueryMatcher(options, sqlmock.QueryMatcherEqual)
+// NewDatastoreNative creates datastoremock database mock to manage expectations.
+func NewDatastoreNative(options *datastore.Options) (*datastoremock, error) {
+	return NewDatastoreWithQueryMatcher(options, sqlmock.QueryMatcherEqual)
 }
 
-func NewClickHouseWithQueryMatcher(
+func NewDatastoreWithQueryMatcher(
 	options *datastore.Options,
 	queryMatcher sqlmock.QueryMatcher,
-) (*clickhousemock, error) {
-	clickHousePool.Lock()
-	dsn := fmt.Sprintf("clickhousemock_db_%d", clickHousePool.counter)
-	clickHousePool.counter++
+) (*datastoremock, error) {
+	datastorePool.Lock()
+	dsn := fmt.Sprintf("datastoremock_db_%d", datastorePool.counter)
+	datastorePool.counter++
 
-	cmock := &clickhousemock{dsn: dsn, drv: clickHousePool, ordered: true, queryMatcher: queryMatcher}
-	clickHousePool.conns[dsn] = cmock
-	clickHousePool.Unlock()
+	cmock := &datastoremock{dsn: dsn, drv: datastorePool, ordered: true, queryMatcher: queryMatcher}
+	datastorePool.conns[dsn] = cmock
+	datastorePool.Unlock()
 
 	return cmock.open(options)
 }
