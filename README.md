@@ -1,71 +1,64 @@
+# mock
 
-# ClickHouse-go-mock
-
-A mock library implementing support for [clickhouse-go/v2/lib/driver](https://pkg.go.dev/github.com/ClickHouse/clickhouse-go/v2/lib/driver)
-
+A mock library implementing [github.com/hanzo-ds/go/lib/driver](https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver),
+for testing code that talks to Datastore without a server.
 
 ## Install
 
-```go
-go get github.com/srikanthccv/ClickHouse-go-mock
+```sh
+go get github.com/hanzo-ds/mock
 ```
 
-## Quick Start
+## Usage
 
 ```go
-
 package main
 
 import (
 	"context"
-	"log"
+	"testing"
 
-	"github.com/ClickHouse/clickhouse-go/v2"
-	cmock "github.com/srikanthccv/ClickHouse-go-mock"
+	datastore "github.com/hanzo-ds/go"
+	mock "github.com/hanzo-ds/mock"
 )
 
 type Video struct {
-	Name    string `db:"name"`
-	Title   string `db:"title"`
-	Content string `db:"content"`
+	Title string
 }
 
-func fetchVideos(conn clickhouse.Conn) (*Video, error) {
-	var video Video
-	if _, err := conn.Query(context.TODO(), "SELECT name, title, content FROM videos WHERE name LIKE ?", "%Cocomelon%"); err != nil {
+func fetchVideos(conn datastore.Conn) (*Video, error) {
+	var v Video
+	if err := conn.QueryRow(context.Background(), "SELECT title FROM videos LIMIT 1").Scan(&v.Title); err != nil {
 		return nil, err
 	}
-	return &video, nil
+	return &v, nil
 }
 
-func main() {
-	mock, err := cmock.NewClickHouseNative(nil)
+func TestFetchVideos(t *testing.T) {
+	conn, err := mock.NewDatastoreNative(nil)
 	if err != nil {
-		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatal(err)
 	}
 
-	mock.ExpectQuery("SELECT name, title, content FROM videos WHERE name LIKE ?").WithArgs("%Cocomelon%")
-	_, err = fetchVideos(mock)
-	if err != nil {
-		log.Fatalf("an error '%s' was not expected when querying a statement", err)
-	}
+	row := mock.NewRow(
+		[]mock.ColumnType{{Name: "title", Type: "String"}},
+		[]any{"a title"},
+	)
+	conn.ExpectQueryRow("SELECT title FROM videos LIMIT 1").WillReturnRow(row)
 
-	if err := mock.ExpectationsWereMet(); err != nil {
-		log.Fatalf("there were unfulfilled expectations: %s", err)
+	if _, err := fetchVideos(conn); err != nil {
+		t.Fatal(err)
+	}
+	if err := conn.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
 	}
 }
 ```
 
-## Documentation
+See the package documentation at [pkg.go.dev](https://pkg.go.dev/github.com/hanzo-ds/mock).
 
-Please see the package documentation at [godoc.org](https://pkg.go.dev/github.com/srikanthccv/ClickHouse-go-mock).
+## Provenance
 
-And tests are the best documentation, see [clickconnmock_test.go](clickconnmock_test.go).
-
-## License
-
-The Apache License, Version 2.0 - see [LICENSE](LICENSE) for more details.
-
-## Credits
-
-This library is built on top of [clickhouse-go](https://github.com/ClickHouse/clickhouse-go) and [sqlmock](https://github.com/DATA-DOG/go-sqlmock)
+A de-branded fork of the upstream mock library, cut from its v0.13.0 release —
+the latest upstream release tag. It is built on [github.com/hanzo-ds/go](https://github.com/hanzo-ds/go)
+and [sqlmock](https://github.com/DATA-DOG/go-sqlmock).

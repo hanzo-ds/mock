@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// This file is a copy of the original file from the datastore-go package.
+// This file is a copy of the original file from github.com/hanzo-ds/go.
 // The original file is located at:
-// https://github.com/ClickHouse/datastore-go/blob/226a902d120aa46e3883fbf6a5a2667dfb9e90d2/datastore_rows_column_type.go
+// github.com/hanzo-ds/go, datastore_rows_column_type.go
 
 package mock
 
