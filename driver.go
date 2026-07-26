@@ -16,8 +16,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/hanzo-ds/go"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/hanzo-ds/go"
 )
 
 var datastorePool *mockDatastoreDriver

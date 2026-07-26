@@ -18,13 +18,13 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/hanzo-ds/go"
 	"github.com/hanzo-ds/go/lib/column"
 	"github.com/hanzo-ds/go/lib/driver"
-	"github.com/DATA-DOG/go-sqlmock"
 )
 
-type OpError struct { // taken from https://github.com/ClickHouse/datastore-go/blob/bfd9f33931482ddacadee5a899b760455b9268e6/datastore.go#L51
+type OpError struct { // taken from OpError in github.com/hanzo-ds/go, datastore.go
 	Op         string
 	ColumnName string
 	Err        error
@@ -639,7 +639,7 @@ func (c *datastoremock) ExpectSelect(expectedSQL string) *ExpectedSelect {
 
 // Select meets https://pkg.go.dev/github.com/hanzo-ds/go/lib/driver#Conn interface
 func (c *datastoremock) Select(ctx context.Context, dest any, query string, args ...any) error {
-	// Implementation based on that of Select in datastore-go https://github.com/ClickHouse/datastore-go/blob/main/scan.go#L29
+	// Implementation based on that of Select in github.com/hanzo-ds/go, scan.go
 	dstSlicePtr := reflect.ValueOf(dest)
 	if dstSlicePtr.Kind() != reflect.Ptr {
 		return &OpError{

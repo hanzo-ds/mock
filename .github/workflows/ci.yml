@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test ./...
+      - name: gofmt
+        run: test -z "$(gofmt -l .)" || { gofmt -l .; exit 1; }
+
+  debrand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: no vendor brand
+        run: |
+          # ci.yml is excluded because this gate names the token it searches for.
+          hits=$(grep -ril clickhouse . --exclude-dir=.git --exclude=ci.yml || true)
+          if [ -n "$hits" ]; then
+            echo "vendor brand reintroduced in:"; echo "$hits"
+            grep -rin clickhouse $hits | head -50
+            exit 1
+          fi
+          echo "clean"

@@ -15,9 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-// This file is a copy of the original file from the datastore-go project.
+// This file is a copy of the original file from github.com/hanzo-ds/go.
 // The original file can be found here:
-// https://github.com/ClickHouse/datastore-go/blob/226a902d120aa46e3883fbf6a5a2667dfb9e90d2/datastore_rows.go
+// github.com/hanzo-ds/go, datastore_rows.go
 
 package mock
 
@@ -66,7 +66,7 @@ func (r *Rows) ScanStruct(dest any) error {
 		return io.EOF
 	}
 
-	// Based on implementation of rows.ScanStruct in datastore-go https://github.com/ClickHouse/datastore-go/blob/main/datastore_rows.go#L81
+	// Based on implementation of rows.ScanStruct in github.com/hanzo-ds/go, datastore_rows.go
 	values, err := r.structMap.Map("ScanStruct", r.Columns(), dest, true)
 	if err != nil {
 		return err
